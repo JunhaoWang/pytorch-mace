@@ -79,13 +79,14 @@ def train(rank, shared_model, optimizer=None):
 
             entropies.append(entropy)
 
-            # action = prob.multinomial().data
-            action = prob.max(1)[1].data
+            action = prob.multinomial().data
+            # ################# changed here
+            # action = prob.max(1)[1].data
             
 
-            ################# bug happens here
-            import pdb
-            pdb.set_trace()        
+            # ################# bug happens here
+            # import pdb
+            # pdb.set_trace()        
             
 
             log_prob = log_prob.gather(1, Variable(action))
