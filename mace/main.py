@@ -16,14 +16,17 @@ if __name__ == '__main__':
     shared_model.share_memory()
     optimizer = my_optim.SharedAdam(shared_model.parameters(), args.lr)
     optimizer.share_memory()
-    processes = []
-    p = mp.Process(target=test, args=(0, shared_model))
-    p.start()
-    processes.append(p)
 
-    for rank in range(0, args.num_process):
-        p = mp.Process(target=train, args=(rank, shared_model, optimizer))
-        p.start()
-        processes.append(p)
-    for p in processes:
-        p.join()
+    train(1, shared_model, optimizer)
+
+    # processes = []
+    # p = mp.Process(target=test, args=(0, shared_model))
+    # p.start()
+    # processes.append(p)
+
+    # for rank in range(0, args.num_process):
+    #     p = mp.Process(target=train, args=(rank, shared_model, optimizer))
+    #     p.start()
+    #     processes.append(p)
+    # for p in processes:
+    #     p.join()

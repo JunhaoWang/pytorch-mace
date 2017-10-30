@@ -7,7 +7,7 @@ from params import args
 import torchvision.transforms as T
 from torch.optim import Adam
 import torch.nn.functional as F
-
+from utils import *
 
 epsilon = 1e-15
 resize = T.Compose([
@@ -15,7 +15,7 @@ resize = T.Compose([
     T.Scale(84, interpolation=T.Image.CUBIC),
     T.ToTensor()])
 
-
+@debug
 def ensure_shared_grads(model, shared_model):
     for param, shared_param in zip(model.parameters(),
                                    shared_model.parameters()):
@@ -23,8 +23,9 @@ def ensure_shared_grads(model, shared_model):
             return
         shared_param._grad = param.grad
 
-
+@debug
 def train(rank, shared_model, optimizer=None):
+
     max_episode_length = args.max_episode_length
     num_steps = args.num_steps
     th.manual_seed(args.seed + rank)
@@ -80,6 +81,13 @@ def train(rank, shared_model, optimizer=None):
 
             # action = prob.multinomial().data
             action = prob.max(1)[1].data
+            
+
+            ################# bug happens here
+            import pdb
+            pdb.set_trace()        
+            
+
             log_prob = log_prob.gather(1, Variable(action))
             state, reward, done, _, _ = world.step(action.squeeze().numpy())
             state = th.from_numpy(np.concatenate(state)).float()
