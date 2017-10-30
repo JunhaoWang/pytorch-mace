@@ -8,6 +8,7 @@ import torchvision.transforms as T
 from params import args
 import time
 import torch.nn.functional as F
+import os
 
 
 resize = T.Compose([
@@ -20,7 +21,7 @@ def test(rank, shared_model):
     vis = visdom.Visdom(port=args.port)
     win = None
     win1 = None
-    max_episode_length = 900
+    max_episode_length = args.test_episode_length
     th.manual_seed(args.seed + rank)
     world = MAWaterWorld_mod_mixed(n_pursuers=args.n_pursuers,
                                    n_evaders=args.n_evaders,
@@ -59,6 +60,10 @@ def test(rank, shared_model):
     KL_loss = 0
     catch = 0
     while True:
+        if episode_length % 2 == 0:
+            print(episode_length * 1.0 / max_episode_length)
+            os.system('echo test - {} >> log'.format(episode_length * 1.0 / max_episode_length))
+
         episode_length += 1
         if done:
             mace.load_state_dict(shared_model.state_dict())
@@ -110,6 +115,8 @@ def test(rank, shared_model):
             print('entropy = %f' % (entropy / max_episode_length / 2))
             print('KL div = %f' % (KL_loss / max_episode_length / 2))
             print('----')
+            import pdb
+            pdb.set_trace()
             if win is None:
                 win = vis.line(X=np.arange(episode, episode+1),
                                Y=np.array([
@@ -120,8 +127,7 @@ def test(rank, shared_model):
                                    xlabel='Iter(min)',
                                    title='MACE on WaterWorld_mod\n',
                                    legend=['Total'] +
-                                   ['Agent-%d' % i for
-                                    i in range(args.n_pursuers)]))
+                                   ['Agent-%d' % i for i in range(args.n_pursuers)]))
             else:
                 vis.line(X=np.array(
                     [np.array(episode).repeat(args.n_pursuers+1)]),

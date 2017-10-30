@@ -8,6 +8,7 @@ import torchvision.transforms as T
 from torch.optim import Adam
 import torch.nn.functional as F
 from utils import *
+import os
 
 epsilon = 1e-15
 resize = T.Compose([
@@ -15,7 +16,6 @@ resize = T.Compose([
     T.Scale(84, interpolation=T.Image.CUBIC),
     T.ToTensor()])
 
-@debug
 def ensure_shared_grads(model, shared_model):
     for param, shared_param in zip(model.parameters(),
                                    shared_model.parameters()):
@@ -23,7 +23,6 @@ def ensure_shared_grads(model, shared_model):
             return
         shared_param._grad = param.grad
 
-@debug
 def train(rank, shared_model, optimizer=None):
 
     max_episode_length = args.max_episode_length
@@ -61,6 +60,11 @@ def train(rank, shared_model, optimizer=None):
     done = True
     episode_length = 0
     while True:
+        
+        if episode_length % 10 == 0:
+            print(episode_length * 1.0 / max_episode_length)
+            os.system('echo train - {} >> log'.format(episode_length * 1.0 / max_episode_length))
+            
         episode_length += 1
         mace.load_state_dict(shared_model.state_dict())
         values = []
@@ -96,7 +100,8 @@ def train(rank, shared_model, optimizer=None):
             img = resize(img)
             done = done or episode_length >= max_episode_length
             reward = th.FloatTensor(reward).type(FloatTensor)
-
+            
+            
             if done:
                 episode_length = 0
                 state = world.reset()

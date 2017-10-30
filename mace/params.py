@@ -17,6 +17,7 @@ Arg = namedtuple('Arg', [
     'lr',
     'beta',
     'max_episode_length',
+    'test_episode_length',
     'num_steps',
     'port',
     'radius',
@@ -40,9 +41,10 @@ args = Arg(
     num_process=12,
     lr=1e-6,
     beta=0.1,  # weight for the entropy
-    max_episode_length=1000,
+    max_episode_length=10,
+    test_episode_length=10,
     num_steps=20,
-    port=5275,
+    port=8891,
     latent_dim=20,
     test_interval=60,
     radius=0.05)
