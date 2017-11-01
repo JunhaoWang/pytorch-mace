@@ -6,9 +6,11 @@ from train import train
 import my_optim
 from params import args
 from test import test
+import os
 
 if __name__ == '__main__':
     os.environ['OMP_NUM_THREADS'] = '1'
+    # os.system('python -m visdom.server &')
     th.manual_seed(args.seed)
     shared_model = NeuralCoord(args.n_pursuers,
                                args.n_states,
@@ -19,16 +21,16 @@ if __name__ == '__main__':
 
     ######### this is for debug
     # train(1, shared_model, optimizer)
-    test(0, shared_model)
+    # test(0, shared_model)
 
-    # processes = []
-    # p = mp.Process(target=test, args=(0, shared_model))
-    # p.start()
-    # processes.append(p)
+    processes = []
+    p = mp.Process(target=test, args=(0, shared_model))
+    p.start()
+    processes.append(p)
 
-    # for rank in range(0, args.num_process):
-    #     p = mp.Process(target=train, args=(rank, shared_model, optimizer))
-    #     p.start()
-    #     processes.append(p)
-    # for p in processes:
-    #     p.join()
+    for rank in range(0, args.num_process):
+        p = mp.Process(target=train, args=(rank, shared_model, optimizer))
+        p.start()
+        processes.append(p)
+    for p in processes:
+        p.join()

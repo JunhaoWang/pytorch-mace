@@ -62,7 +62,7 @@ def train(rank, shared_model, optimizer=None):
     while True:
         
         if episode_length % 10 == 0:
-            print(episode_length * 1.0 / max_episode_length)
+            print('train', episode_length * 1.0 / max_episode_length)
             os.system('echo train - {} >> log'.format(episode_length * 1.0 / max_episode_length))
             
         episode_length += 1

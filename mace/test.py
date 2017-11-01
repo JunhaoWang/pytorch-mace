@@ -61,7 +61,7 @@ def test(rank, shared_model):
     catch = 0
     while True:
         if episode_length % 2 == 0:
-            print(episode_length * 1.0 / max_episode_length)
+            print('test', episode_length * 1.0 / max_episode_length)
             os.system('echo test - {} >> log'.format(episode_length * 1.0 / max_episode_length))
 
         episode_length += 1
@@ -115,8 +115,8 @@ def test(rank, shared_model):
             print('entropy = %f' % (entropy / max_episode_length / 2))
             print('KL div = %f' % (KL_loss / max_episode_length / 2))
             print('----')
-            import pdb
-            pdb.set_trace()
+            # import pdb
+            # pdb.set_trace()
             if win is None:
                 win = vis.line(X=np.arange(episode, episode+1),
                                Y=np.array([
