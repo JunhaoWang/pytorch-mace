@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/JunhaoWang/pytorch-mace/badge.svg?branch=master)](https://coveralls.io/github/JunhaoWang/pytorch-mace?branch=master)
+
 #+TITLE: An implementation of MACE
 #+AUTHOR: xuehy
 #+EMAIL: hyxue@outlook.com
